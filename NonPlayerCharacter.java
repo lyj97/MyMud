@@ -6,36 +6,53 @@ public class NonPlayerCharacter {
 
     String id;
     String name;
-    String keyWord;
+    HashMap<String, String> keyWord;
     String response;
     String default_response;
     String pet_phrase;
     Room location;
     Thread thread = new SaySomething();
 
-    class SaySomething extends Thread{
+    public NonPlayerCharacter(){
+        keyWord = new HashMap<>();
+    }
+
+    class SaySomething extends Thread {
         @Override
-        public void run(){
+        public void run() {
             HashMap list;
-            while (true) {
-                list = location.getPlayerList();
-                if (!list.isEmpty()) {
-                    MessageManagement.showToPlayer(null, CommonContent.NPC_MESSAGE + "\t\b" + "(NPC)[" + get_full_name() + "]£∫" + pet_phrase, location.getPlayerList());
-                    try {
-                        this.sleep(CommonContent.NPC_STATEMENT_INTERVAL_TIME);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("NPC°æ" + get_full_name() + "°øœ˚œ¢œﬂ≥ÃÕÀ≥ˆ£°");
-                        break;
+            if(CommonContent.NPC_AUTOMATICALLY_STATEMENT) {
+                while (true) {
+                    list = location.getPlayerList();
+                    if (!list.isEmpty()) {
+                        try {
+                            this.sleep(CommonContent.NPC_STATEMENT_INTERVAL_TIME);
+                            MessageManagement.showToPlayer(null, CommonContent.NPC_MESSAGE + "\t\b" + "(NPC)[" + get_full_name() + "]Ôºö" + pet_phrase, list);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("NPC„Äê" + get_full_name() + "„ÄëÊ∂àÊÅØÁ∫øÁ®ãÂºÇÂ∏∏ÈÄÄÂá∫ÔºÅ");
+                            break;
+                        }
+                    } else {
+                        try {
+                            this.sleep(2 * CommonContent.NPC_STATEMENT_INTERVAL_TIME);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            System.out.println("NPC„Äê" + get_full_name() + "„ÄëÊ∂àÊÅØÁ∫øÁ®ãÂºÇÂ∏∏ÈÄÄÂá∫ÔºÅ");
+                            break;
+                        }
                     }
                 }
-                else{
+            }
+            else{
+                list = location.getPlayerList();
+                if (!list.isEmpty()) {
                     try {
-                        this.sleep(2 * CommonContent.NPC_STATEMENT_INTERVAL_TIME);
-                    } catch (InterruptedException e) {
+                        this.sleep(CommonContent.NPC_STATEMENT_INTERVAL_TIME);
+                        MessageManagement.showToPlayer(null, CommonContent.NPC_MESSAGE + "\t\b" + "(NPC)[" + get_full_name() + "]Ôºö" + pet_phrase, list);
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        System.out.println("NPC°æ" + get_full_name() + "°øœ˚œ¢œﬂ≥ÃÕÀ≥ˆ£°");
-                        break;
+                        System.out.println("NPC„Äê" + get_full_name() + "„ÄëÊ∂àÊÅØÁ∫øÁ®ãÂºÇÂ∏∏ÈÄÄÂá∫ÔºÅ");
                     }
                 }
             }
@@ -43,8 +60,8 @@ public class NonPlayerCharacter {
     }
 
     void chat(Player player, String message){
-        if(message.equals(keyWord)){
-            MessageManagement.showToPlayer(player, CommonContent.MESSAGE + "\t\b" + response);
+        if(keyWord.containsKey(message)){
+            MessageManagement.showToPlayer(player, CommonContent.MESSAGE + "\t\b" + keyWord.get(message));
         }
         else{
             MessageManagement.showToPlayer(player, CommonContent.MESSAGE + "\t\b" + default_response);
